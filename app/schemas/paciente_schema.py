@@ -1,6 +1,6 @@
 from typing import Optional
 
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 
 class PacienteBase(BaseModel):
@@ -9,7 +9,9 @@ class PacienteBase(BaseModel):
     apellidos: str = Field(..., min_length=2, max_length=100)
     correo: EmailStr
     telefono: str = Field(..., min_length=7, max_length=15)
-    direccion: Optional[str] = Field(default=None, max_length=200)
+    direccion: Optional[str] = Field(default=None, max_length=255)
+    fecha_nacimiento: Optional[str] = Field(default=None, max_length=20)
+    activo: bool = True
 
 
 class PacienteCreate(PacienteBase):
@@ -21,11 +23,12 @@ class PacienteUpdate(BaseModel):
     apellidos: Optional[str] = Field(default=None, min_length=2, max_length=100)
     correo: Optional[EmailStr] = None
     telefono: Optional[str] = Field(default=None, min_length=7, max_length=15)
-    direccion: Optional[str] = Field(default=None, max_length=200)
+    direccion: Optional[str] = Field(default=None, max_length=255)
+    fecha_nacimiento: Optional[str] = Field(default=None, max_length=20)
+    activo: Optional[bool] = None
 
 
 class PacienteResponse(PacienteBase):
     id: int
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

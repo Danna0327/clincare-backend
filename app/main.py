@@ -1,10 +1,10 @@
 from fastapi import FastAPI
 
+from app.controllers.paciente_controller import router as paciente_router
 from app.core.config import settings
 from app.core.database import create_tables_if_possible
-from app.controllers.paciente_controller import router as paciente_router
 
-# Importar modelos para que SQLAlchemy los registre
+# Importar modelos para registrar metadata
 from app.models.paciente import Paciente  # noqa: F401
 
 app = FastAPI(
@@ -16,11 +16,6 @@ app = FastAPI(
 
 @app.on_event("startup")
 def startup_event():
-    """
-    Evento de inicio de la aplicación.
-    Intenta conectar a la base de datos y crear tablas si la conexión está disponible.
-    Si la base no responde, la API sigue levantando para permitir continuar el desarrollo.
-    """
     create_tables_if_possible()
 
 
