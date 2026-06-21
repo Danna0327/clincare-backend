@@ -1,3 +1,9 @@
+from app.schemas.colaborador_schema import (
+    ColaboradorBase,
+    ColaboradorCreate,
+    ColaboradorResponse,
+    ColaboradorUpdate,
+)
 from app.schemas.paciente_schema import (
     PacienteBase,
     PacienteCreate,
@@ -10,4 +16,8 @@ __all__ = [
     "PacienteCreate",
     "PacienteResponse",
     "PacienteUpdate",
+    "ColaboradorBase",
+    "ColaboradorCreate",
+    "ColaboradorResponse",
+    "ColaboradorUpdate",
 ]

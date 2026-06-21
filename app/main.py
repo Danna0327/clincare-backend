@@ -1,10 +1,12 @@
 from fastapi import FastAPI
 
+from app.controllers.colaborador_controller import router as colaborador_router
 from app.controllers.paciente_controller import router as paciente_router
 from app.core.config import settings
 from app.core.database import create_tables_if_possible
 
 # Importar modelos para registrar metadata
+from app.models.colaborador import Colaborador  # noqa: F401
 from app.models.paciente import Paciente  # noqa: F401
 
 app = FastAPI(
@@ -36,3 +38,4 @@ def health_check():
 
 
 app.include_router(paciente_router)
+app.include_router(colaborador_router)
