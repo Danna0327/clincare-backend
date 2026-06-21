@@ -1,3 +1,5 @@
+#COMMIT 13 — auth service
+
 from app.repositories.usuario_repository import UsuarioRepository
 from app.core.security import verify_password, create_token
 
