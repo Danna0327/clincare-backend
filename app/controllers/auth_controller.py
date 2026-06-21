@@ -1,3 +1,5 @@
+#COMMIT 14 — auth controller
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
