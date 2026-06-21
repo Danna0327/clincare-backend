@@ -1,3 +1,5 @@
+# commit 12 - security helpers
+
 import hashlib
 import base64
 import json
