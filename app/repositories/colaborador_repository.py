@@ -1,3 +1,5 @@
+#COMMIT 16 — colaborador repository
+
 from app.models.colaborador import Colaborador
 
 class ColaboradorRepository:
