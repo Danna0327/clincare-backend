@@ -1,49 +1,51 @@
-from typing import List
-
 from fastapi import HTTPException, status
+from sqlalchemy.orm import Session
 
 from app.repositories.paciente_repository import PacienteRepository
-from app.schemas.paciente_schema import (
-    PacienteCreate,
-    PacienteUpdate,
-    PacienteResponse
-)
+from app.schemas.paciente_schema import PacienteCreate, PacienteUpdate
 
 
 class PacienteService:
-    def __init__(self, repository: PacienteRepository):
-        self.repository = repository
+    """
+    Servicio que contiene la lógica de negocio del módulo Paciente.
+    Principios SOLID:
+    - S: centraliza la lógica de negocio del paciente.
+    - D: depende del repositorio, no de detalles del controlador.
+    """
 
-    def listar_pacientes(self) -> List[PacienteResponse]:
-        pacientes = self.repository.get_all()
-        return [PacienteResponse.model_validate(paciente) for paciente in pacientes]
+    def __init__(self, db: Session):
+        self.repository = PacienteRepository(db)
 
-    def obtener_paciente_por_id(self, paciente_id: int) -> PacienteResponse:
+    def listar_pacientes(self):
+        return self.repository.get_all()
+
+    def obtener_paciente_por_id(self, paciente_id: int):
         paciente = self.repository.get_by_id(paciente_id)
         if not paciente:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Paciente no encontrado"
             )
-        return PacienteResponse.model_validate(paciente)
+        return paciente
 
-    def crear_paciente(self, paciente_data: PacienteCreate) -> PacienteResponse:
-        if self.repository.get_by_cedula(paciente_data.cedula):
+    def crear_paciente(self, paciente_data: PacienteCreate):
+        paciente_existente = self.repository.get_by_cedula(paciente_data.cedula)
+        if paciente_existente:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Ya existe un paciente con esa cédula"
             )
 
-        if self.repository.get_by_correo(paciente_data.correo):
+        correo_existente = self.repository.get_by_correo(paciente_data.correo)
+        if correo_existente:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Ya existe un paciente con ese correo"
             )
 
-        paciente = self.repository.create(paciente_data)
-        return PacienteResponse.model_validate(paciente)
+        return self.repository.create(paciente_data)
 
-    def actualizar_paciente(self, paciente_id: int, paciente_data: PacienteUpdate) -> PacienteResponse:
+    def actualizar_paciente(self, paciente_id: int, paciente_data: PacienteUpdate):
         paciente = self.repository.get_by_id(paciente_id)
         if not paciente:
             raise HTTPException(
@@ -51,10 +53,17 @@ class PacienteService:
                 detail="Paciente no encontrado"
             )
 
-        paciente_actualizado = self.repository.update(paciente, paciente_data)
-        return PacienteResponse.model_validate(paciente_actualizado)
+        if paciente_data.correo and paciente_data.correo != paciente.correo:
+            correo_existente = self.repository.get_by_correo(paciente_data.correo)
+            if correo_existente:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Ya existe un paciente con ese correo"
+                )
 
-    def eliminar_paciente(self, paciente_id: int) -> dict:
+        return self.repository.update(paciente, paciente_data)
+
+    def eliminar_paciente(self, paciente_id: int):
         paciente = self.repository.get_by_id(paciente_id)
         if not paciente:
             raise HTTPException(
