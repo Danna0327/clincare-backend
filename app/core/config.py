@@ -1,28 +1,27 @@
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
+    DB_SERVER: str
+    DB_NAME: str
+    DB_USERNAME: str
+    DB_PASSWORD: str
+    DB_DRIVER: str = "ODBC Driver 17 for SQL Server"
+
     APP_NAME: str = "ClinCare API"
     APP_VERSION: str = "1.0.0"
-
-    DB_HOST: str = "localhost"
-    DB_PORT: int = 3306
-    DB_USER: str = "root"
-    DB_PASSWORD: str = "123456"
-    DB_NAME: str = "clincare_db"
-
-    SECRET_KEY: str = "clincare_secret_key_2026"
-    ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
-
-    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+    APP_DESCRIPTION: str = "Sistema de Gestión de Citas Médicas"
 
     @property
     def database_url(self) -> str:
+        driver = self.DB_DRIVER.replace(" ", "+")
         return (
-            f"mysql+pymysql://{self.DB_USER}:{self.DB_PASSWORD}"
-            f"@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
+            f"mssql+pyodbc://{self.DB_USERNAME}:{self.DB_PASSWORD}"
+            f"@{self.DB_SERVER}/{self.DB_NAME}?driver={driver}"
         )
+
+    class Config:
+        env_file = ".env"
 
 
 settings = Settings()
