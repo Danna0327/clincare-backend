@@ -1,3 +1,9 @@
+from app.schemas.cita_schema import (
+    CitaBase,
+    CitaCreate,
+    CitaResponse,
+    CitaUpdate,
+)
 from app.schemas.colaborador_schema import (
     ColaboradorBase,
     ColaboradorCreate,
@@ -20,4 +26,8 @@ __all__ = [
     "ColaboradorCreate",
     "ColaboradorResponse",
     "ColaboradorUpdate",
+    "CitaBase",
+    "CitaCreate",
+    "CitaResponse",
+    "CitaUpdate",
 ]
