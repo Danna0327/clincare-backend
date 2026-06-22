@@ -1,22 +1,27 @@
 from app.repositories.usuario_repository import UsuarioRepository
-from app.core.security import verify_password
+from app.schemas.auth_schema import LoginRequest, TokenResponse
+from app.core.security import verify_password, create_access_token
 
 class AuthService:
 
-    def __init__(self, repo: UsuarioRepository):
-        self.repo = repo
+    def __init__(self, usuario_repository: UsuarioRepository):
+        self.usuario_repository = usuario_repository
 
-    def login(self, username: str, password: str):
+    def login(self, data: LoginRequest) -> TokenResponse:
+        usuario = self.usuario_repository.get_by_username(data.username)
 
-        user = self.repo.get_by_username(username)
+        if not usuario:
+            raise ValueError("Usuario o contraseña incorrectos")
 
-        if not user:
-            raise Exception("Usuario no encontrado")
+        if usuario.estado != "ACTIVO":
+            raise ValueError("Usuario inactivo")
 
-        if not verify_password(password, user.password_hash):
-            raise Exception("Contraseña incorrecta")
+        if not verify_password(data.password, usuario.password_hash):
+            raise ValueError("Credenciales incorrectas")
 
-        return {
-            "message": "Login exitoso",
-            "user": user.username
-        }
+        token = create_access_token({
+            "sub": usuario.username,
+            "rol": usuario.rol
+        })
+
+        return TokenResponse(access_token=token)
