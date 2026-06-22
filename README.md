@@ -1,4 +1,5 @@
 
+
 # ClinCare – Sistema de Gestión de Citas Médicas
 
 ## Descripción
@@ -120,29 +121,39 @@ Documentación Swagger:
 ```text
 http://localhost:8000/docs
 ```
-=======
+
 # ClinCare Backend
 
-Sistema de Gestión de Citas Médicas desarrollado con **FastAPI**, **SQLAlchemy** y **SQL Server**.
+# ClinCare Backend - T02.03
+>>>>>>> ea48053 (Integrar backend ClinCare T02.03 con routers, versionado API y documentación Swagger)
+
+Sistema de Gestión de Citas Médicas desarrollado con FastAPI y SQLAlchemy, siguiendo principios SOLID y arquitectura por capas.
 
 ## Tecnologías
-- Python
+- Python 3.11
 - FastAPI
 - SQLAlchemy
 - SQL Server
-- PyODBC
+- Pydantic
 
 ## Arquitectura
-El proyecto sigue una arquitectura por capas basada en principios **SOLID**:
+El proyecto está organizado en capas:
+- **Controllers**: exposición de endpoints REST
+- **Services**: lógica de negocio
+- **Repositories**: acceso a datos
+- **Models**: entidades ORM
+- **Schemas**: validación y serialización
 
-- **Controllers**: exponen endpoints REST
-- **Services**: contienen la lógica de negocio
-- **Repositories**: gestionan el acceso a datos
-- **Models**: representan las entidades de la base de datos
-- **Schemas**: validan las entradas y salidas de la API
+## Principios SOLID aplicados
+- **S**: cada capa tiene una responsabilidad única
+- **O**: el sistema puede extenderse agregando nuevos módulos sin modificar la estructura base
+- **L**: las clases de servicio/repositorio mantienen contratos consistentes
+- **I**: los esquemas y operaciones están separados según el contexto
+- **D**: los servicios dependen de abstracciones de persistencia y sesiones inyectadas
 
-## Estructura del proyecto
+## Ejecución
 ```bash
+
 app/
 ├── controllers/
 ├── core/
@@ -152,3 +163,5 @@ app/
 ├── services/
 └── main.py
 
+
+python -m uvicorn app.main:app --reload
