@@ -4,15 +4,18 @@ from sqlalchemy.orm import Session
 from app.models.colaborador import Colaborador
 from app.models.paciente import Paciente
 from app.repositories.cita_repository import CitaRepository
-from app.schemas.cita_schema import CitaCreate, CitaUpdate
+from app.schemas.cita_schema import CitaCreate, CitaEstadoUpdate, CitaUpdate
 
 
 class CitaService:
     """
     Lógica de negocio del módulo Cita.
-    SOLID:
-    - S: centraliza reglas de negocio de citas
-    - D: depende de repositorio, no del controlador
+
+    SOLID aplicado:
+    - S (Single Responsibility):
+      Esta clase solo contiene reglas de negocio de Cita.
+    - D (Dependency Inversion):
+      El controlador depende del servicio, y el servicio usa el repositorio.
     """
 
     def __init__(self, db: Session):
@@ -97,3 +100,30 @@ class CitaService:
 
         self.repository.delete(cita)
         return {"message": "Cita eliminada correctamente"}
+
+    def cambiar_estado_cita(self, cita_id: int, estado_data: CitaEstadoUpdate):
+        """
+        Cambia el estado de una cita respetando reglas de negocio.
+
+        Reglas:
+        - Solo se puede cambiar a ATENDIDA o CANCELADA
+        - Si la cita ya está ATENDIDA o CANCELADA, no puede cambiarse otra vez
+        """
+        cita = self.repository.get_by_id(cita_id)
+        if not cita:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Cita no encontrada"
+            )
+
+        if cita.estado in ["ATENDIDA", "CANCELADA"]:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"La cita ya se encuentra en estado {cita.estado} y no puede modificarse"
+            )
+
+        cita.estado = estado_data.estado
+        self.db.commit()
+        self.db.refresh(cita)
+
+        return cita

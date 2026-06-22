@@ -2,7 +2,12 @@ from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
-from app.schemas.cita_schema import CitaCreate, CitaResponse, CitaUpdate
+from app.schemas.cita_schema import (
+    CitaCreate,
+    CitaEstadoUpdate,
+    CitaResponse,
+    CitaUpdate
+)
 from app.services.cita_service import CitaService
 
 router = APIRouter(
@@ -37,6 +42,16 @@ def actualizar_cita(
 ):
     service = CitaService(db)
     return service.actualizar_cita(cita_id, cita_data)
+
+
+@router.patch("/{cita_id}/estado", response_model=CitaResponse, status_code=status.HTTP_200_OK)
+def cambiar_estado_cita(
+    cita_id: int,
+    estado_data: CitaEstadoUpdate,
+    db: Session = Depends(get_db)
+):
+    service = CitaService(db)
+    return service.cambiar_estado_cita(cita_id, estado_data)
 
 
 @router.delete("/{cita_id}", status_code=status.HTTP_200_OK)

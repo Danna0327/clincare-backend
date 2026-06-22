@@ -4,6 +4,10 @@ from typing import Optional
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
+ESTADOS_VALIDOS = {"PENDIENTE", "ATENDIDA", "CANCELADA"}
+ESTADOS_TRANSICION_MANUAL = {"ATENDIDA", "CANCELADA"}
+
+
 class CitaBase(BaseModel):
     paciente_id: int = Field(..., gt=0)
     medico_id: int = Field(..., gt=0)
@@ -16,7 +20,7 @@ class CitaBase(BaseModel):
     @classmethod
     def validar_estado(cls, value: str) -> str:
         value = value.upper().strip()
-        if value not in ["PENDIENTE", "ATENDIDA", "CANCELADA"]:
+        if value not in ESTADOS_VALIDOS:
             raise ValueError("El estado debe ser PENDIENTE, ATENDIDA o CANCELADA")
         return value
 
@@ -39,8 +43,20 @@ class CitaUpdate(BaseModel):
         if value is None:
             return value
         value = value.upper().strip()
-        if value not in ["PENDIENTE", "ATENDIDA", "CANCELADA"]:
+        if value not in ESTADOS_VALIDOS:
             raise ValueError("El estado debe ser PENDIENTE, ATENDIDA o CANCELADA")
+        return value
+
+
+class CitaEstadoUpdate(BaseModel):
+    estado: str = Field(..., description="Nuevo estado de la cita")
+
+    @field_validator("estado")
+    @classmethod
+    def validar_estado(cls, value: str) -> str:
+        value = value.upper().strip()
+        if value not in ESTADOS_TRANSICION_MANUAL:
+            raise ValueError("Solo se permite cambiar el estado a ATENDIDA o CANCELADA")
         return value
 
 
