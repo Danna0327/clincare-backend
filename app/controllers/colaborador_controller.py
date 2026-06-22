@@ -1,61 +1,65 @@
-from fastapi import APIRouter, Depends, status
+from typing import List
+
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.core.database import get_db
+from app.db.database import get_db
 from app.schemas.colaborador_schema import (
     ColaboradorCreate,
     ColaboradorResponse,
-    ColaboradorUpdate,
+    ColaboradorUpdate
 )
 from app.services.colaborador_service import ColaboradorService
 
 router = APIRouter(
-    prefix="/api/colaboradores",
+    prefix="/colaboradores",
     tags=["Colaboradores"]
 )
 
 
-@router.get("/", response_model=list[ColaboradorResponse], status_code=status.HTTP_200_OK)
+@router.get("/", response_model=List[ColaboradorResponse], summary="Listar colaboradores")
 def listar_colaboradores(db: Session = Depends(get_db)):
     service = ColaboradorService(db)
-    return service.listar_colaboradores()
+    return service.obtener_todos()
 
 
-@router.get("/medicos", response_model=list[ColaboradorResponse], status_code=status.HTTP_200_OK)
-def listar_medicos(db: Session = Depends(get_db)):
-    service = ColaboradorService(db)
-    return service.listar_medicos()
-
-
-@router.get("/administrativos", response_model=list[ColaboradorResponse], status_code=status.HTTP_200_OK)
-def listar_administrativos(db: Session = Depends(get_db)):
-    service = ColaboradorService(db)
-    return service.listar_administrativos()
-
-
-@router.get("/{colaborador_id}", response_model=ColaboradorResponse, status_code=status.HTTP_200_OK)
+@router.get("/{colaborador_id}", response_model=ColaboradorResponse, summary="Obtener colaborador por ID")
 def obtener_colaborador(colaborador_id: int, db: Session = Depends(get_db)):
     service = ColaboradorService(db)
-    return service.obtener_colaborador_por_id(colaborador_id)
+    colaborador = service.obtener_por_id(colaborador_id)
+    if not colaborador:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Colaborador no encontrado"
+        )
+    return colaborador
 
 
-@router.post("/", response_model=ColaboradorResponse, status_code=status.HTTP_201_CREATED)
-def crear_colaborador(colaborador_data: ColaboradorCreate, db: Session = Depends(get_db)):
+@router.post("/", response_model=ColaboradorResponse, status_code=status.HTTP_201_CREATED, summary="Registrar colaborador")
+def crear_colaborador(data: ColaboradorCreate, db: Session = Depends(get_db)):
     service = ColaboradorService(db)
-    return service.crear_colaborador(colaborador_data)
+    return service.crear(data)
 
 
-@router.put("/{colaborador_id}", response_model=ColaboradorResponse, status_code=status.HTTP_200_OK)
-def actualizar_colaborador(
-    colaborador_id: int,
-    colaborador_data: ColaboradorUpdate,
-    db: Session = Depends(get_db)
-):
+@router.put("/{colaborador_id}", response_model=ColaboradorResponse, summary="Actualizar colaborador")
+def actualizar_colaborador(colaborador_id: int, data: ColaboradorUpdate, db: Session = Depends(get_db)):
     service = ColaboradorService(db)
-    return service.actualizar_colaborador(colaborador_id, colaborador_data)
+    colaborador = service.actualizar(colaborador_id, data)
+    if not colaborador:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Colaborador no encontrado"
+        )
+    return colaborador
 
 
-@router.delete("/{colaborador_id}", status_code=status.HTTP_200_OK)
+@router.delete("/{colaborador_id}", status_code=status.HTTP_200_OK, summary="Eliminar colaborador")
 def eliminar_colaborador(colaborador_id: int, db: Session = Depends(get_db)):
     service = ColaboradorService(db)
-    return service.eliminar_colaborador(colaborador_id)
+    eliminado = service.eliminar(colaborador_id)
+    if not eliminado:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Colaborador no encontrado"
+        )
+    return {"message": "Colaborador eliminado correctamente"}

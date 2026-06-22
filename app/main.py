@@ -1,29 +1,33 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 
-from app.controllers.cita_controller import router as cita_router
-from app.controllers.colaborador_controller import router as colaborador_router
-from app.controllers.paciente_controller import router as paciente_router
 from app.core.config import settings
-from app.core.database import create_tables_if_possible
+from app.db.database import create_tables_if_possible
+from app.controllers.paciente_controller import router as paciente_router
+from app.controllers.colaborador_controller import router as colaborador_router
+from app.controllers.cita_controller import router as cita_router
 
-# Importar modelos para registrar metadata
-from app.models.cita import Cita  # noqa: F401
-from app.models.colaborador import Colaborador  # noqa: F401
-from app.models.paciente import Paciente  # noqa: F401
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """
+    Evento de inicio de la aplicación.
+    Intenta crear tablas si la BD está disponible, sin bloquear el arranque.
+    """
+    create_tables_if_possible()
+    yield
+
 
 app = FastAPI(
     title=settings.APP_NAME,
     version=settings.APP_VERSION,
-    description=settings.APP_DESCRIPTION
+    description=settings.APP_DESCRIPTION,
+    lifespan=lifespan
 )
 
 
-@app.on_event("startup")
-def startup_event():
-    create_tables_if_possible()
-
-
-@app.get("/", tags=["Health Check"])
+@app.get("/", tags=["Inicio"])
 def root():
     return {
         "message": "ClinCare API funcionando correctamente",
@@ -31,14 +35,19 @@ def root():
     }
 
 
-@app.get("/health", tags=["Health Check"])
+@app.get("/health", tags=["Monitoreo"])
 def health_check():
     return {
         "status": "ok",
-        "app": settings.APP_NAME
+        "application": settings.APP_NAME,
+        "version": settings.APP_VERSION
     }
 
 
-app.include_router(paciente_router)
-app.include_router(colaborador_router)
-app.include_router(cita_router)
+# Prefijo general de API
+API_PREFIX = "/api/v1"
+
+# Routers
+app.include_router(paciente_router, prefix=API_PREFIX)
+app.include_router(colaborador_router, prefix=API_PREFIX)
+app.include_router(cita_router, prefix=API_PREFIX)
