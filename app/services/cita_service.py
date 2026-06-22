@@ -4,7 +4,13 @@ from sqlalchemy.orm import Session
 from app.models.colaborador import Colaborador
 from app.models.paciente import Paciente
 from app.repositories.cita_repository import CitaRepository
-from app.schemas.cita_schema import CitaCreate, CitaEstadoUpdate, CitaUpdate
+from app.schemas.cita_schema import (
+    CitaCreate,
+    CitaEstadoUpdate,
+    CitasPorCedulaResponse,
+    CitaConsultaItem,
+    CitaUpdate
+)
 
 
 class CitaService:
@@ -127,3 +133,48 @@ class CitaService:
         self.db.refresh(cita)
 
         return cita
+
+    def obtener_citas_por_cedula(self, cedula: str) -> CitasPorCedulaResponse:
+        """
+        Busca un paciente por cédula y devuelve todas sus citas.
+        """
+        cedula = cedula.strip()
+
+        paciente = self.db.query(Paciente).filter(Paciente.cedula == cedula).first()
+        if not paciente:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="No existe un paciente registrado con la cédula proporcionada"
+            )
+
+        citas = self.repository.get_by_paciente_id(paciente.id)
+
+        citas_response = []
+        for cita in citas:
+            medico_nombre = ""
+            if cita.medico:
+                nombres = cita.medico.nombres or ""
+                apellidos = cita.medico.apellidos or ""
+                medico_nombre = f"{nombres} {apellidos}".strip()
+
+            citas_response.append(
+                CitaConsultaItem(
+                    id=cita.id,
+                    fecha=cita.fecha,
+                    hora=cita.hora,
+                    motivo=cita.motivo,
+                    estado=cita.estado,
+                    medico_id=cita.medico_id,
+                    medico_nombre=medico_nombre
+                )
+            )
+
+        paciente_nombre = f"{paciente.nombres} {paciente.apellidos}".strip()
+
+        return CitasPorCedulaResponse(
+            paciente_id=paciente.id,
+            cedula=paciente.cedula,
+            paciente_nombre=paciente_nombre,
+            total_citas=len(citas_response),
+            citas=citas_response
+        )
