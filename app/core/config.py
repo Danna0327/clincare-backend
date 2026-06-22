@@ -1,3 +1,4 @@
+from typing import Optional
 from urllib.parse import quote_plus
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -7,24 +8,26 @@ class Settings(BaseSettings):
     # =========================
     # Configuración de Base de Datos
     # =========================
-    db_server: str
-    db_port: int = 1433
-    db_name: str
-    db_driver: str = "ODBC Driver 17 for SQL Server"
+    DB_TYPE: str = "sqlite"
+    DB_SERVER: Optional[str] = None
+    DB_PORT: int = 1433
+    DB_NAME: str = "clincare_db"
+    DB_DRIVER: str = "ODBC Driver 17 for SQL Server"
 
     # Opcional: usuario/clave si luego usas autenticación SQL
-    db_user: str | None = None
-    db_password: str | None = None
+    DB_USER: Optional[str] = None
+    DB_PASSWORD: Optional[str] = None
 
     # Si usas autenticación de Windows
-    db_trusted_connection: bool = True
+    DB_TRUSTED_CONNECTION: str = "yes"
+    DB_TRUST_SERVER_CERTIFICATE: str = "yes"
 
     # =========================
     # Configuración de la API
     # =========================
-    app_name: str = "ClinCare API"
-    app_version: str = "1.0.0"
-    app_description: str = "Sistema de Gestión de Citas Médicas"
+    APP_NAME: str = "ClinCare API"
+    APP_VERSION: str = "1.0.0"
+    APP_DESCRIPTION: str = "Sistema de Gestión de Citas Médicas"
 
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -34,23 +37,26 @@ class Settings(BaseSettings):
     @property
     def database_url(self) -> str:
         """
-        Construye la URL de conexión para SQL Server.
-        Compatible con autenticación de Windows o SQL Server.
+        Construye la URL de conexión para la base de datos.
+        Si DB_TYPE=sqlite, usa una base de datos local.
+        Si DB_TYPE=sqlserver, usa SQL Server con pyodbc.
         """
-        driver = quote_plus(self.db_driver)
+        if self.DB_TYPE.lower() == "sqlite":
+            return "sqlite:///./database/clincare.db"
 
-        # Si tienes usuario y contraseña, usa autenticación SQL
-        if self.db_user and self.db_password:
+        driver = quote_plus(self.DB_DRIVER)
+
+        if self.DB_USER and self.DB_PASSWORD:
             return (
-                f"mssql+pyodbc://{self.db_user}:{self.db_password}"
-                f"@{self.db_server}:{self.db_port}/{self.db_name}"
+                f"mssql+pyodbc://{self.DB_USER}:{self.DB_PASSWORD}"
+                f"@{self.DB_SERVER}:{self.DB_PORT}/{self.DB_NAME}"
                 f"?driver={driver}"
             )
 
-        # Si no, usa autenticación de Windows
         return (
-            f"mssql+pyodbc://@{self.db_server}:{self.db_port}/{self.db_name}"
-            f"?driver={driver}&trusted_connection=yes"
+            f"mssql+pyodbc://@{self.DB_SERVER}:{self.DB_PORT}/{self.DB_NAME}"
+            f"?driver={driver}&trusted_connection={self.DB_TRUSTED_CONNECTION}"
+            f"&trustservercertificate={self.DB_TRUST_SERVER_CERTIFICATE}"
         )
 
 

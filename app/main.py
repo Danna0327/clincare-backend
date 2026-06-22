@@ -15,9 +15,9 @@ from app.models.usuario import Usuario
 
 
 app = FastAPI(
-    title=settings.app_name,
-    version=settings.app_version,
-    description=settings.app_description
+    title=settings.APP_NAME,
+    version=settings.APP_VERSION,
+    description=settings.APP_DESCRIPTION
 )
 
 
@@ -39,7 +39,7 @@ def startup_event():
 def root():
     return {
         "message": "ClinCare API funcionando correctamente",
-        "version": settings.app_version
+        "version": settings.APP_VERSION
     }
 
 
