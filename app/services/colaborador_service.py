@@ -1,11 +1,15 @@
-from app.models.colaborador import Colaborador
+from app.repositories.colaborador_repository import ColaboradorRepository
 
 class ColaboradorService:
 
-    def __init__(self, repo):
+    def __init__(self, repo: ColaboradorRepository):
         self.repo = repo
 
-    def crear(self, data):
+    def listar(self):
+        return self.repo.get_all()
 
-        nuevo = Colaborador(**data.dict())
-        return self.repo.create(nuevo)
+    def crear(self, data):
+        if data.tipo_colaborador not in ["MEDICO", "ADMINISTRATIVO"]:
+            raise ValueError("Tipo inválido")
+
+        return self.repo.create(data)
