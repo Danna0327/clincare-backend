@@ -8,9 +8,3 @@ class UsuarioRepository:
 
     def get_by_username(self, username: str):
         return self.db.query(Usuario).filter(Usuario.username == username).first()
-
-    def create(self, usuario: Usuario):
-        self.db.add(usuario)
-        self.db.commit()
-        self.db.refresh(usuario)
-        return usuario
