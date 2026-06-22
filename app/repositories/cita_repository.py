@@ -1,6 +1,6 @@
 from typing import Optional
 
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app.models.cita import Cita
 from app.schemas.cita_schema import CitaCreate, CitaUpdate
@@ -42,3 +42,12 @@ class CitaRepository:
     def delete(self, cita: Cita) -> None:
         self.db.delete(cita)
         self.db.commit()
+
+    def get_by_paciente_id(self, paciente_id: int):
+        return (
+            self.db.query(Cita)
+            .options(joinedload(Cita.medico), joinedload(Cita.paciente))
+            .filter(Cita.paciente_id == paciente_id)
+            .order_by(Cita.fecha.asc(), Cita.hora.asc())
+            .all()
+        )

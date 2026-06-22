@@ -64,3 +64,27 @@ class CitaResponse(CitaBase):
     id: int
 
     model_config = ConfigDict(from_attributes=True)
+
+
+# ============================
+# RESPUESTA DE CONSULTA POR CÉDULA
+# ============================
+
+class CitaConsultaItem(BaseModel):
+    id: int
+    fecha: date
+    hora: time
+    motivo: str
+    estado: str
+    medico_id: int
+    medico_nombre: str
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class CitasPorCedulaResponse(BaseModel):
+    paciente_id: int
+    cedula: str
+    paciente_nombre: str
+    total_citas: int
+    citas: list[CitaConsultaItem]

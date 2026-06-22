@@ -6,6 +6,7 @@ from app.schemas.cita_schema import (
     CitaCreate,
     CitaEstadoUpdate,
     CitaResponse,
+    CitasPorCedulaResponse,
     CitaUpdate
 )
 from app.services.cita_service import CitaService
@@ -20,6 +21,12 @@ router = APIRouter(
 def listar_citas(db: Session = Depends(get_db)):
     service = CitaService(db)
     return service.listar_citas()
+
+
+@router.get("/paciente/{cedula}", response_model=CitasPorCedulaResponse, status_code=status.HTTP_200_OK)
+def obtener_citas_por_cedula(cedula: str, db: Session = Depends(get_db)):
+    service = CitaService(db)
+    return service.obtener_citas_por_cedula(cedula)
 
 
 @router.get("/{cita_id}", response_model=CitaResponse, status_code=status.HTTP_200_OK)
