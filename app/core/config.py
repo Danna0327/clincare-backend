@@ -4,29 +4,54 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    APP_NAME: str = "ClinCare API"
-    APP_VERSION: str = "1.0.0"
-    APP_DESCRIPTION: str = "Sistema de Gestión de Citas Médicas"
+    # =========================
+    # Configuración de Base de Datos
+    # =========================
+    db_server: str
+    db_port: int = 1433
+    db_name: str
+    db_driver: str = "ODBC Driver 17 for SQL Server"
 
-    DB_SERVER: str
-    DB_PORT: int = 1433
-    DB_NAME: str
-    DB_DRIVER: str = "ODBC Driver 17 for SQL Server"
-    DB_TRUSTED_CONNECTION: str = "yes"
-    DB_TRUST_SERVER_CERTIFICATE: str = "yes"
+    # Opcional: usuario/clave si luego usas autenticación SQL
+    db_user: str | None = None
+    db_password: str | None = None
 
-    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+    # Si usas autenticación de Windows
+    db_trusted_connection: bool = True
+
+    # =========================
+    # Configuración de la API
+    # =========================
+    app_name: str = "ClinCare API"
+    app_version: str = "1.0.0"
+    app_description: str = "Sistema de Gestión de Citas Médicas"
+
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        extra="ignore"
+    )
 
     @property
     def database_url(self) -> str:
-        connection_string = (
-            f"DRIVER={{{self.DB_DRIVER}}};"
-            f"SERVER={self.DB_SERVER},{self.DB_PORT};"
-            f"DATABASE={self.DB_NAME};"
-            f"Trusted_Connection={self.DB_TRUSTED_CONNECTION};"
-            f"TrustServerCertificate={self.DB_TRUST_SERVER_CERTIFICATE};"
+        """
+        Construye la URL de conexión para SQL Server.
+        Compatible con autenticación de Windows o SQL Server.
+        """
+        driver = quote_plus(self.db_driver)
+
+        # Si tienes usuario y contraseña, usa autenticación SQL
+        if self.db_user and self.db_password:
+            return (
+                f"mssql+pyodbc://{self.db_user}:{self.db_password}"
+                f"@{self.db_server}:{self.db_port}/{self.db_name}"
+                f"?driver={driver}"
+            )
+
+        # Si no, usa autenticación de Windows
+        return (
+            f"mssql+pyodbc://@{self.db_server}:{self.db_port}/{self.db_name}"
+            f"?driver={driver}&trusted_connection=yes"
         )
-        return f"mssql+pyodbc:///?odbc_connect={quote_plus(connection_string)}"
 
 
 settings = Settings()
