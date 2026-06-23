@@ -1,4 +1,8 @@
 from typing import Optional
+from sqlalchemy.orm import Session
+from app.models.colaborador import Colaborador
+from app.schemas.colaborador_schema import ColaboradorCreate, ColaboradorUpdate
+
 
 from sqlalchemy.orm import Session
 
@@ -53,10 +57,15 @@ class ColaboradorRepository:
 
     def update(self, colaborador: Colaborador, colaborador_data: ColaboradorUpdate) -> Colaborador:
         update_data = colaborador_data.model_dump(exclude_unset=True)
+<<<<<<< HEAD
+        for field, value in update_data.items():
+            setattr(colaborador, field, value)
+=======
 
         for field, value in update_data.items():
             setattr(colaborador, field, value)
 
+>>>>>>> 10d2f083474a8930af1b4a04a901aaf4f8146e74
         self.db.commit()
         self.db.refresh(colaborador)
         return colaborador

@@ -1,0 +1,37 @@
+IF DB_ID('clincare_db') IS NOT NULL
+BEGIN
+    ALTER DATABASE clincare_db SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+    DROP DATABASE clincare_db;
+END;
+GO
+
+CREATE DATABASE clincare_db;
+GO
+
+USE clincare_db;
+GO
+
+CREATE TABLE usuarios (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    rol VARCHAR(30) NOT NULL,
+    estado VARCHAR(20) NOT NULL DEFAULT 'ACTIVO',
+    created_at DATETIME NOT NULL DEFAULT GETDATE()
+);
+GO
+
+CREATE TABLE colaboradores (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    cedula VARCHAR(10) NOT NULL UNIQUE,
+    nombres VARCHAR(100) NOT NULL,
+    apellidos VARCHAR(100) NOT NULL,
+    correo VARCHAR(100) NOT NULL UNIQUE,
+    telefono VARCHAR(20),
+    tipo_colaborador VARCHAR(20) NOT NULL,
+    especialidad VARCHAR(100),
+    estado VARCHAR(20) NOT NULL DEFAULT 'ACTIVO',
+    created_at DATETIME NOT NULL DEFAULT GETDATE()
+);
+GO
