@@ -41,12 +41,16 @@ class ColaboradorBase(BaseModel):
         return value.strip()
 
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 10d2f083474a8930af1b4a04a901aaf4f8146e74
 class ColaboradorCreate(ColaboradorBase):
     pass
 
 
 class ColaboradorUpdate(BaseModel):
+<<<<<<< HEAD
     nombres: Optional[str] = None
     apellidos: Optional[str] = None
     correo: Optional[EmailStr] = None
@@ -57,6 +61,8 @@ class ColaboradorUpdate(BaseModel):
 
 
 class ColaboradorUpdate(BaseModel):
+=======
+>>>>>>> 10d2f083474a8930af1b4a04a901aaf4f8146e74
     nombres: Optional[str] = Field(default=None, min_length=2, max_length=100)
     apellidos: Optional[str] = Field(default=None, min_length=2, max_length=100)
     correo: Optional[EmailStr] = None
@@ -76,6 +82,7 @@ class ColaboradorUpdate(BaseModel):
         return value
 
 
+<<<<<<< HEAD
 
 class ColaboradorResponse(ColaboradorBase):
     id: int
@@ -86,3 +93,9 @@ class ColaboradorResponse(ColaboradorBase):
 
     model_config = ConfigDict(from_attributes=True)
 
+=======
+class ColaboradorResponse(ColaboradorBase):
+    id: int
+
+    model_config = ConfigDict(from_attributes=True)
+>>>>>>> 10d2f083474a8930af1b4a04a901aaf4f8146e74

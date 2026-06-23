@@ -120,5 +120,9 @@ class ColaboradorService:
             )
 
         self.repository.delete(colaborador)
+<<<<<<< HEAD
         return {"message": "Colaborador eliminado correctamente"}
 
+=======
+        return {"message": "Colaborador eliminado correctamente"}
+>>>>>>> 10d2f083474a8930af1b4a04a901aaf4f8146e74

@@ -29,5 +29,9 @@ class Usuario(Base):
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
     rol: Mapped[str] = mapped_column(String(30), nullable=False)  # ADMIN, MEDICO, RECEPCION
     estado: Mapped[str] = mapped_column(String(20), default="ACTIVO")
+<<<<<<< HEAD
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
+=======
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+>>>>>>> 10d2f083474a8930af1b4a04a901aaf4f8146e74

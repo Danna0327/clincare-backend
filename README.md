@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 
 # ClinCare – Sistema de Gestión de Citas Médicas
@@ -126,6 +127,9 @@ http://localhost:8000/docs
 
 # ClinCare Backend - T02.03
 >>>>>>> ea48053 (Integrar backend ClinCare T02.03 con routers, versionado API y documentación Swagger)
+=======
+# ClinCare Backend - T02.03
+>>>>>>> 10d2f083474a8930af1b4a04a901aaf4f8146e74
 
 Sistema de Gestión de Citas Médicas desarrollado con FastAPI y SQLAlchemy, siguiendo principios SOLID y arquitectura por capas.
 
@@ -153,15 +157,4 @@ El proyecto está organizado en capas:
 
 ## Ejecución
 ```bash
-
-app/
-├── controllers/
-├── core/
-├── models/
-├── repositories/
-├── schemas/
-├── services/
-└── main.py
-
-
 python -m uvicorn app.main:app --reload
