@@ -1,19 +1,3 @@
-
-from sqlalchemy import Column, Integer, String, DateTime
-from sqlalchemy.sql import func
-from app.core.database import Base
-
-class Usuario(Base):
-    __tablename__ = "usuarios"
-
-    id = Column(Integer, primary_key=True, index=True)
-    username = Column(String(50), unique=True, nullable=False)
-    email = Column(String(100), unique=True, nullable=False)
-    password_hash = Column(String(255), nullable=False)
-    rol = Column(String(30), nullable=False)
-    estado = Column(String(20), default="ACTIVO")
-    created_at = Column(DateTime, server_default=func.now())
-
 from datetime import datetime
 from sqlalchemy import String, Integer, DateTime
 from sqlalchemy.orm import Mapped, mapped_column
@@ -29,9 +13,4 @@ class Usuario(Base):
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
     rol: Mapped[str] = mapped_column(String(30), nullable=False)  # ADMIN, MEDICO, RECEPCION
     estado: Mapped[str] = mapped_column(String(20), default="ACTIVO")
-<<<<<<< HEAD
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-
-=======
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
->>>>>>> 10d2f083474a8930af1b4a04a901aaf4f8146e74

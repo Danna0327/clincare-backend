@@ -80,22 +80,4 @@ def actualizar_colaborador(colaborador_id: int, data: ColaboradorUpdate, db: Ses
 @router.delete("/{colaborador_id}", status_code=status.HTTP_200_OK, summary="Eliminar colaborador")
 def eliminar_colaborador(colaborador_id: int, db: Session = Depends(get_db)):
     service = ColaboradorService(db)
-<<<<<<< HEAD
-
     return service.eliminar_colaborador(colaborador_id)
-
-
-=======
->>>>>>> 10d2f083474a8930af1b4a04a901aaf4f8146e74
-    eliminado = service.eliminar(colaborador_id)
-    if not eliminado:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Colaborador no encontrado"
-        )
-<<<<<<< HEAD
-    return {"message": "Colaborador eliminado correctamente"}
-
-=======
-    return {"message": "Colaborador eliminado correctamente"}
->>>>>>> 10d2f083474a8930af1b4a04a901aaf4f8146e74
