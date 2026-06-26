@@ -1,5 +1,4 @@
 from typing import List
-
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
@@ -11,55 +10,34 @@ from app.schemas.paciente_schema import (
 )
 from app.services.paciente_service import PacienteService
 
-router = APIRouter(
-    prefix="/pacientes",
-    tags=["Pacientes"]
-)
+router = APIRouter(prefix="/pacientes", tags=["Pacientes"])
 
 
-@router.get("/", response_model=List[PacienteResponse], summary="Listar pacientes")
+@router.get("/", response_model=List[PacienteResponse])
 def listar_pacientes(db: Session = Depends(get_db)):
     service = PacienteService(db)
-    return service.obtener_todos()
+    return service.listar_pacientes()
 
 
-@router.get("/{paciente_id}", response_model=PacienteResponse, summary="Obtener paciente por ID")
+@router.get("/{paciente_id}", response_model=PacienteResponse)
 def obtener_paciente(paciente_id: int, db: Session = Depends(get_db)):
     service = PacienteService(db)
-    paciente = service.obtener_por_id(paciente_id)
-    if not paciente:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Paciente no encontrado"
-        )
-    return paciente
+    return service.obtener_paciente_por_id(paciente_id)
 
 
-@router.post("/", response_model=PacienteResponse, status_code=status.HTTP_201_CREATED, summary="Registrar paciente")
+@router.post("/", response_model=PacienteResponse, status_code=status.HTTP_201_CREATED)
 def crear_paciente(data: PacienteCreate, db: Session = Depends(get_db)):
     service = PacienteService(db)
-    return service.crear(data)
+    return service.crear_paciente(data)
 
 
-@router.put("/{paciente_id}", response_model=PacienteResponse, summary="Actualizar paciente")
+@router.put("/{paciente_id}", response_model=PacienteResponse)
 def actualizar_paciente(paciente_id: int, data: PacienteUpdate, db: Session = Depends(get_db)):
     service = PacienteService(db)
-    paciente = service.actualizar(paciente_id, data)
-    if not paciente:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Paciente no encontrado"
-        )
-    return paciente
+    return service.actualizar_paciente(paciente_id, data)
 
 
-@router.delete("/{paciente_id}", status_code=status.HTTP_200_OK, summary="Eliminar paciente")
+@router.delete("/{paciente_id}")
 def eliminar_paciente(paciente_id: int, db: Session = Depends(get_db)):
     service = PacienteService(db)
-    eliminado = service.eliminar(paciente_id)
-    if not eliminado:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Paciente no encontrado"
-        )
-    return {"message": "Paciente eliminado correctamente"}
+    return service.eliminar_paciente(paciente_id)
