@@ -1,26 +1,18 @@
 from typing import Optional
-
-from pydantic import BaseModel, EmailStr
-
-class ColaboradorBase(BaseModel):
-    cedula: str
-    nombres: str
-    apellidos: str
-    correo: EmailStr
-    telefono: Optional[str] = None
-    tipo_colaborador: str
-    especialidad: Optional[str] = None
-    estado: str = "ACTIVO"
-
-from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
+from pydantic import BaseModel, EmailStr, Field, field_validator
+from pydantic import ConfigDict
 
 
+# =========================
+# BASE
+# =========================
 class ColaboradorBase(BaseModel):
     cedula: str = Field(..., min_length=10, max_length=10)
     nombres: str = Field(..., min_length=2, max_length=100)
     apellidos: str = Field(..., min_length=2, max_length=100)
     correo: EmailStr
-    telefono: str = Field(..., min_length=7, max_length=15)
+    telefono: Optional[str] = Field(default=None, min_length=7, max_length=15)
+
     rol: str = Field(..., description="MEDICO o ADMINISTRATIVO")
     especialidad: Optional[str] = Field(default=None, max_length=100)
     activo: bool = True
@@ -41,28 +33,17 @@ class ColaboradorBase(BaseModel):
         return value.strip()
 
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 10d2f083474a8930af1b4a04a901aaf4f8146e74
+# =========================
+# CREATE
+# =========================
 class ColaboradorCreate(ColaboradorBase):
     pass
 
 
+# =========================
+# UPDATE
+# =========================
 class ColaboradorUpdate(BaseModel):
-<<<<<<< HEAD
-    nombres: Optional[str] = None
-    apellidos: Optional[str] = None
-    correo: Optional[EmailStr] = None
-    telefono: Optional[str] = None
-    tipo_colaborador: Optional[str] = None
-    especialidad: Optional[str] = None
-    estado: Optional[str] = None
-
-
-class ColaboradorUpdate(BaseModel):
-=======
->>>>>>> 10d2f083474a8930af1b4a04a901aaf4f8146e74
     nombres: Optional[str] = Field(default=None, min_length=2, max_length=100)
     apellidos: Optional[str] = Field(default=None, min_length=2, max_length=100)
     correo: Optional[EmailStr] = None
@@ -82,20 +63,10 @@ class ColaboradorUpdate(BaseModel):
         return value
 
 
-<<<<<<< HEAD
-
-class ColaboradorResponse(ColaboradorBase):
-    id: int
-
-
-    class Config:
-        from_attributes = True
-
-    model_config = ConfigDict(from_attributes=True)
-
-=======
+# =========================
+# RESPONSE
+# =========================
 class ColaboradorResponse(ColaboradorBase):
     id: int
 
     model_config = ConfigDict(from_attributes=True)
->>>>>>> 10d2f083474a8930af1b4a04a901aaf4f8146e74

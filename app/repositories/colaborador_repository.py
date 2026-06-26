@@ -57,15 +57,13 @@ class ColaboradorRepository:
 
     def update(self, colaborador: Colaborador, colaborador_data: ColaboradorUpdate) -> Colaborador:
         update_data = colaborador_data.model_dump(exclude_unset=True)
-<<<<<<< HEAD
-        for field, value in update_data.items():
-            setattr(colaborador, field, value)
-=======
 
         for field, value in update_data.items():
             setattr(colaborador, field, value)
 
->>>>>>> 10d2f083474a8930af1b4a04a901aaf4f8146e74
+        for field, value in update_data.items():
+            setattr(colaborador, field, value)
+
         self.db.commit()
         self.db.refresh(colaborador)
         return colaborador
