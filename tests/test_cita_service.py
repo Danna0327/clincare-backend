@@ -1,14 +1,23 @@
 import pytest
 from unittest.mock import MagicMock
+
 from app.services.cita_service import CitaService
 
 
 def test_listar_citas():
+    """
+    Verifica que el servicio obtenga correctamente
+    las citas almacenadas.
+    """
+
     mock_db = MagicMock()
     service = CitaService(mock_db)
 
     service.repository.get_all = MagicMock(return_value=["cita1", "cita2"])
 
-    result = service.listar_citas()
+    resultado = service.listar_citas()
 
-    assert len(result) == 2
+    service.repository.get_all.assert_called_once()
+
+    assert len(resultado) == 2
+    assert resultado == ["cita1", "cita2"]
