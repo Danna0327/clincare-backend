@@ -16,7 +16,7 @@ class PacienteService:
     def __init__(self, db: Session):
         self.repository = PacienteRepository(db)
 
-    def listar_pacientes(self):
+    def listar_pacientes(self) -> list:
         return self.repository.get_all()
 
     def obtener_paciente_por_id(self, paciente_id: int):

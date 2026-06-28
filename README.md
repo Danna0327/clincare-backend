@@ -148,3 +148,16 @@ http://localhost:8000/docs
 http://localhost:8000/redoc
 ```
 
+## Ejecución
+```bash
+python -m uvicorn app.main:app --reload
+
+## Pruebas
+
+Para ejecutar las pruebas unitarias:
+
+```bash
+pytest
+```
+
+Actualmente el proyecto incluye pruebas iniciales para los servicios y la estructura base para los controladores utilizando **pytest**.
