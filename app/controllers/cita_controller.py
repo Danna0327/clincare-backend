@@ -97,7 +97,7 @@ def cambiar_estado(
     Cambia el estado de una cita médica.
     """
     service = CitaService(db)
-    return service.cambiar_estado(cita_id, data)
+    return service.cambiar_estado_cita(cita_id, data)
 
 
 @router.get(
@@ -113,7 +113,7 @@ def consultar_por_cedula(
     Consulta todas las citas asociadas a la cédula de un paciente.
     """
     service = CitaService(db)
-    return service.consultar_por_cedula(cedula)
+    return service.obtener_citas_por_cedula(cedula)
 
 
 @router.delete(
