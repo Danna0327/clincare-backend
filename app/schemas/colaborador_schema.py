@@ -1,12 +1,13 @@
 from typing import Optional
-from pydantic import BaseModel, EmailStr, Field, field_validator
-from pydantic import ConfigDict
+
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
 
-# =========================
-# BASE
-# =========================
 class ColaboradorBase(BaseModel):
+    """
+    Esquema base para colaboradores.
+    """
+
     cedula: str = Field(..., min_length=10, max_length=10)
     nombres: str = Field(..., min_length=2, max_length=100)
     apellidos: str = Field(..., min_length=2, max_length=100)
@@ -21,8 +22,10 @@ class ColaboradorBase(BaseModel):
     @classmethod
     def validar_rol(cls, value: str) -> str:
         value = value.upper().strip()
+
         if value not in ["MEDICO", "ADMINISTRATIVO"]:
             raise ValueError("El rol debe ser MEDICO o ADMINISTRATIVO")
+
         return value
 
     @field_validator("especialidad")
@@ -33,17 +36,14 @@ class ColaboradorBase(BaseModel):
         return value.strip()
 
 
-# =========================
-# CREATE
-# =========================
 class ColaboradorCreate(ColaboradorBase):
+    """Esquema para crear colaboradores."""
     pass
 
 
-# =========================
-# UPDATE
-# =========================
 class ColaboradorUpdate(BaseModel):
+    """Esquema para actualizar colaboradores."""
+
     nombres: Optional[str] = Field(default=None, min_length=2, max_length=100)
     apellidos: Optional[str] = Field(default=None, min_length=2, max_length=100)
     correo: Optional[EmailStr] = None
@@ -55,18 +55,23 @@ class ColaboradorUpdate(BaseModel):
     @field_validator("rol")
     @classmethod
     def validar_rol(cls, value):
+
         if value is None:
             return value
+
         value = value.upper().strip()
+
         if value not in ["MEDICO", "ADMINISTRATIVO"]:
             raise ValueError("El rol debe ser MEDICO o ADMINISTRATIVO")
+
         return value
 
 
-# =========================
-# RESPONSE
-# =========================
 class ColaboradorResponse(ColaboradorBase):
+    """
+    Respuesta enviada por la API.
+    """
+
     id: int
 
     model_config = ConfigDict(from_attributes=True)

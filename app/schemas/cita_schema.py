@@ -3,12 +3,25 @@ from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
+# Estados permitidos para una cita
+ESTADOS_VALIDOS = {
+    "PENDIENTE",
+    "ATENDIDA",
+    "CANCELADA"
+}
 
-ESTADOS_VALIDOS = {"PENDIENTE", "ATENDIDA", "CANCELADA"}
-ESTADOS_TRANSICION_MANUAL = {"ATENDIDA", "CANCELADA"}
+# Estados permitidos para el cambio manual de estado
+ESTADOS_TRANSICION_MANUAL = {
+    "ATENDIDA",
+    "CANCELADA"
+}
 
 
 class CitaBase(BaseModel):
+    """
+    Información base de una cita médica.
+    """
+
     paciente_id: int = Field(..., gt=0)
     medico_id: int = Field(..., gt=0)
     fecha: date
@@ -18,18 +31,25 @@ class CitaBase(BaseModel):
 
     @field_validator("estado")
     @classmethod
-    def validar_estado(cls, value: str) -> str:
+    def validar_estado(cls, value: str):
         value = value.upper().strip()
+
         if value not in ESTADOS_VALIDOS:
-            raise ValueError("El estado debe ser PENDIENTE, ATENDIDA o CANCELADA")
+            raise ValueError(
+                "El estado debe ser PENDIENTE, ATENDIDA o CANCELADA"
+            )
+
         return value
 
 
 class CitaCreate(CitaBase):
+    """Esquema para crear citas."""
     pass
 
 
 class CitaUpdate(BaseModel):
+    """Esquema para actualizar citas."""
+
     paciente_id: Optional[int] = Field(default=None, gt=0)
     medico_id: Optional[int] = Field(default=None, gt=0)
     fecha: Optional[date] = None
@@ -40,37 +60,56 @@ class CitaUpdate(BaseModel):
     @field_validator("estado")
     @classmethod
     def validar_estado(cls, value):
+
         if value is None:
             return value
+
         value = value.upper().strip()
+
         if value not in ESTADOS_VALIDOS:
-            raise ValueError("El estado debe ser PENDIENTE, ATENDIDA o CANCELADA")
+            raise ValueError(
+                "El estado debe ser PENDIENTE, ATENDIDA o CANCELADA"
+            )
+
         return value
 
 
 class CitaEstadoUpdate(BaseModel):
-    estado: str = Field(..., description="Nuevo estado de la cita")
+    """
+    Esquema para cambiar únicamente el estado de una cita.
+    """
+
+    estado: str = Field(...)
 
     @field_validator("estado")
     @classmethod
-    def validar_estado(cls, value: str) -> str:
+    def validar_estado(cls, value):
+
         value = value.upper().strip()
+
         if value not in ESTADOS_TRANSICION_MANUAL:
-            raise ValueError("Solo se permite cambiar el estado a ATENDIDA o CANCELADA")
+            raise ValueError(
+                "Solo se permite cambiar el estado a ATENDIDA o CANCELADA"
+            )
+
         return value
 
 
 class CitaResponse(CitaBase):
+    """
+    Respuesta enviada por la API.
+    """
+
     id: int
 
     model_config = ConfigDict(from_attributes=True)
 
 
-# ============================
-# RESPUESTA DE CONSULTA POR CÉDULA
-# ============================
-
 class CitaConsultaItem(BaseModel):
+    """
+    Información resumida de una cita.
+    """
+
     id: int
     fecha: date
     hora: time
@@ -83,6 +122,10 @@ class CitaConsultaItem(BaseModel):
 
 
 class CitasPorCedulaResponse(BaseModel):
+    """
+    Respuesta para la consulta de citas por cédula.
+    """
+
     paciente_id: int
     cedula: str
     paciente_nombre: str
