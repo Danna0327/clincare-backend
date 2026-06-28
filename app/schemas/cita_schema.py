@@ -95,6 +95,10 @@ class CitaEstadoUpdate(BaseModel):
         return value
 
 
+# Alias de compatibilidad para mantener imports previos
+CambioEstadoCita = CitaEstadoUpdate
+
+
 class CitaResponse(CitaBase):
     """
     Respuesta enviada por la API.

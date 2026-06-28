@@ -8,7 +8,7 @@ from app.schemas.cita_schema import (
     CitaCreate,
     CitaResponse,
     CitaUpdate,
-    CambioEstadoCita,
+    CitaEstadoUpdate,
 )
 from app.services.cita_service import CitaService
 
@@ -90,7 +90,7 @@ def actualizar_cita(
 )
 def cambiar_estado(
     cita_id: int,
-    data: CambioEstadoCita,
+    data: CitaEstadoUpdate,
     db: Session = Depends(get_db),
 ):
     """
