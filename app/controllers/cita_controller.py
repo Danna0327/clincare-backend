@@ -9,6 +9,7 @@ from app.schemas.cita_schema import (
     CitaResponse,
     CitaUpdate,
     CitaEstadoUpdate,
+    CitasPorCedulaResponse,
 )
 from app.services.cita_service import CitaService
 
@@ -102,7 +103,7 @@ def cambiar_estado(
 
 @router.get(
     "/paciente/{cedula}",
-    response_model=List[CitaResponse],
+    response_model=CitasPorCedulaResponse,
     summary="Consultar citas por cédula",
 )
 def consultar_por_cedula(
