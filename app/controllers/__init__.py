@@ -5,5 +5,5 @@ from .cita_controller import router as cita_router
 __all__ = [
     "paciente_router",
     "colaborador_router",
-    "cita_router"
+    "cita_router",
 ]
