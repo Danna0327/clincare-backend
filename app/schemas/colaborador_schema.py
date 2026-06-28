@@ -4,11 +4,16 @@ from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
 
 class ColaboradorBase(BaseModel):
+    """
+    Esquema base para colaboradores.
+    """
+
     cedula: str = Field(..., min_length=10, max_length=10)
     nombres: str = Field(..., min_length=2, max_length=100)
     apellidos: str = Field(..., min_length=2, max_length=100)
     correo: EmailStr
-    telefono: str = Field(..., min_length=7, max_length=15)
+    telefono: Optional[str] = Field(default=None, min_length=7, max_length=15)
+
     rol: str = Field(..., description="MEDICO o ADMINISTRATIVO")
     especialidad: Optional[str] = Field(default=None, max_length=100)
     activo: bool = True
@@ -17,8 +22,10 @@ class ColaboradorBase(BaseModel):
     @classmethod
     def validar_rol(cls, value: str) -> str:
         value = value.upper().strip()
+
         if value not in ["MEDICO", "ADMINISTRATIVO"]:
             raise ValueError("El rol debe ser MEDICO o ADMINISTRATIVO")
+
         return value
 
     @field_validator("especialidad")
@@ -30,10 +37,13 @@ class ColaboradorBase(BaseModel):
 
 
 class ColaboradorCreate(ColaboradorBase):
+    """Esquema para crear colaboradores."""
     pass
 
 
 class ColaboradorUpdate(BaseModel):
+    """Esquema para actualizar colaboradores."""
+
     nombres: Optional[str] = Field(default=None, min_length=2, max_length=100)
     apellidos: Optional[str] = Field(default=None, min_length=2, max_length=100)
     correo: Optional[EmailStr] = None
@@ -45,15 +55,23 @@ class ColaboradorUpdate(BaseModel):
     @field_validator("rol")
     @classmethod
     def validar_rol(cls, value):
+
         if value is None:
             return value
+
         value = value.upper().strip()
+
         if value not in ["MEDICO", "ADMINISTRATIVO"]:
             raise ValueError("El rol debe ser MEDICO o ADMINISTRATIVO")
+
         return value
 
 
 class ColaboradorResponse(ColaboradorBase):
+    """
+    Respuesta enviada por la API.
+    """
+
     id: int
 
     model_config = ConfigDict(from_attributes=True)

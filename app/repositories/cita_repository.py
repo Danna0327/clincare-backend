@@ -16,7 +16,7 @@ class CitaRepository:
     def __init__(self, db: Session):
         self.db = db
 
-    def get_all(self):
+    def get_all(self) -> list[Cita]:
         return self.db.query(Cita).order_by(Cita.id.asc()).all()
 
     def get_by_id(self, cita_id: int) -> Optional[Cita]:
@@ -43,7 +43,7 @@ class CitaRepository:
         self.db.delete(cita)
         self.db.commit()
 
-    def get_by_paciente_id(self, paciente_id: int):
+    def get_by_paciente_id(self, paciente_id: int) -> list[Cita]:
         return (
             self.db.query(Cita)
             .options(joinedload(Cita.medico), joinedload(Cita.paciente))
